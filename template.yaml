@@ -370,6 +370,8 @@ Resources:
         - email
         - preferred_username
       UserPoolName: !Sub ${AWS::StackName}-UserPool
+      LambdaConfig:
+        PostAuthentication: !GetAtt handleSubmit.Arn
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
@@ -421,6 +423,13 @@ Resources:
           USER_POOL_ARN: !GetAtt UserPool.Arn
     Metadata:
       RuntimeOption: typescript
+  UserPoolTohandleSubmitPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt handleSubmit.Arn
+      Principal: cognito-idp.amazonaws.com
+      Action: lambda:InvokeFunction
+      SourceArn: !GetAtt UserPool.Arn
 Parameters:
   StackTagName:
     Type: String
